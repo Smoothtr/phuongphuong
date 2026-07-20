@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "images:optimize": "node scripts/optimize-images.mjs"
+    "images:optimize": "node scripts/optimize-images.mjs",
+    "images:lqip": "node scripts/generate-lqip.mjs",
+    "images:og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

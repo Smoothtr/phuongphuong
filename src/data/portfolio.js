@@ -1,4 +1,5 @@
 import siteContent from "../content/site.json";
+import lqipMap from "./lqip.json";
 
 const defaultWidths = [480, 768, 1200];
 
@@ -38,7 +39,8 @@ const imageAsset = (name, width, height, widths = defaultWidths) => {
     webpSrcSet: srcSet("webp"),
     jpegSrcSet: srcSet("jpg"),
     width,
-    height
+    height,
+    lqip: lqipMap[name] || ""
   };
 };
 

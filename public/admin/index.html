@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Phương Phương — Content Studio</title>
+    <!-- Explicit config path: without this, Decap resolves config.yml relative to the
+         page URL, and the /admin (no trailing slash) rewrite makes it request /config.yml → 404. -->
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
     <script

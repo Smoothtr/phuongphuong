@@ -164,12 +164,25 @@ function ResponsiveImage({
 }) {
   const hasWebp = Boolean(asset.webpSrcSet);
   const hasJpegSrcSet = Boolean(asset.jpegSrcSet);
+  const hasLqip = Boolean(asset.lqip);
+
+  // Mark cached images as loaded immediately — onLoad does not always fire for
+  // images completed before hydration, which would leave them at opacity 0.
+  const markLoaded = (img) => {
+    if (img && img.complete && img.naturalWidth > 0) {
+      img.classList.add("is-loaded");
+    }
+  };
 
   return (
-    <picture>
+    <picture
+      className={hasLqip ? "lqip-shell" : undefined}
+      style={hasLqip ? { backgroundImage: "url(" + asset.lqip + ")" } : undefined}
+    >
       {hasWebp && <source type="image/webp" srcSet={asset.webpSrcSet} sizes={sizes} />}
       <img
         className={className}
+        ref={markLoaded}
         src={asset.src}
         srcSet={hasJpegSrcSet ? asset.jpegSrcSet : undefined}
         sizes={sizes}
@@ -179,6 +192,7 @@ function ResponsiveImage({
         loading={priority ? "eager" : loading}
         decoding="async"
         fetchPriority={priority ? "high" : "auto"}
+        onLoad={(event) => event.currentTarget.classList.add("is-loaded")}
       />
     </picture>
   );
@@ -225,6 +239,7 @@ function WorkCard({ work, index, onOpen }) {
               asset={work.image}
               alt={work.alt}
               sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 40vw"
+              priority={index < 2}
             />
           </span>
           <span className="work-card__details">
@@ -240,7 +255,7 @@ function WorkCard({ work, index, onOpen }) {
 
 function AnimatedMeasurementValue({ value, reduced }) {
   const valueRef = useRef(null);
-  const visible = useInViewOnce(valueRef, reduced, 0.65);
+  const visible = useInViewOnce(valueRef, reduced, 0.4);
   const [numbers, setNumbers] = useState(null);
   const targets = (value.match(/\d+/g) || []).map(Number);
 
@@ -259,8 +274,13 @@ function AnimatedMeasurementValue({ value, reduced }) {
     };
 
     frame = window.requestAnimationFrame(tick);
+    // Guarantee: even if rAF is starved (heavy load, background tab, weak
+    // devices), the real measurements ALWAYS land shortly after the duration.
+    // Wrong-looking stats are a booking-blocking bug, so this is belt and braces.
+    const settle = window.setTimeout(() => setNumbers(targets), duration + 180);
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
     };
   }, [reduced, value, visible]);
 
@@ -277,9 +297,18 @@ function AnimatedMeasurementValue({ value, reduced }) {
   return <dd ref={valueRef}>{content}</dd>;
 }
 
-function PressMarquee({ label, items }) {
+function PressMarquee({ label, items, reduced }) {
+  const laneRef = useRef(null);
+  // Pause the infinite marquee whenever it is off-screen so it never burns
+  // paint/composite work while the visitor is elsewhere on the page.
+  const active = useViewportActive(laneRef, reduced, 0.05);
+
   return (
-    <div className="press-marquee" data-reveal="marquee">
+    <div
+      className={active ? "press-marquee" : "press-marquee is-idle"}
+      data-reveal="marquee"
+      ref={laneRef}
+    >
       <p>{label}</p>
       <div className="press-marquee__lane">
         <div className="press-marquee__track">
@@ -503,13 +532,25 @@ function App() {
     setBookingStatus(contact.form.sendingMessage);
 
     try {
+      // Web3Forms compatibility: it requires an access_key inside the payload.
+      // Formspree and custom endpoints simply ignore the extra field.
+      const accessKey = import.meta.env.VITE_FORM_ACCESS_KEY;
+      const payload = {
+        subject: "Booking enquiry — " + name,
+        name,
+        email: replyTo,
+        project,
+        message
+      };
+      if (accessKey) payload.access_key = accessKey;
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json"
         },
-        body: JSON.stringify({ name, email: replyTo, project, message })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) throw new Error("The booking request was not accepted.");
@@ -588,7 +629,13 @@ function App() {
               />
             ))}
           </div>
-          <a className="outline-link" href={selectedWork.ctaTarget}>{selectedWork.ctaLabel} <Arrow /></a>
+          <button
+            className="outline-link"
+            type="button"
+            onClick={(event) => openLightbox(works, 0, event)}
+          >
+            {selectedWork.ctaLabel} <Arrow />
+          </button>
         </section>
 
         <section className="editorial" id="editorial">
@@ -672,7 +719,7 @@ function App() {
             <div className="about__columns" data-reveal="copy">
               <div>
                 <p>{about.biography}</p>
-                <MagneticLink className="text-link" href={"mailto:" + profile.email} reduced={reduced}>
+                <MagneticLink className="text-link" href="#contact" reduced={reduced}>
                   {about.ctaLabel} <Arrow />
                 </MagneticLink>
               </div>
@@ -685,7 +732,7 @@ function App() {
                 ))}
               </dl>
             </div>
-            <PressMarquee label={about.pressLabel} items={about.press} />
+            <PressMarquee label={about.pressLabel} items={about.press} reduced={reduced} />
           </div>
         </section>
 
@@ -701,7 +748,11 @@ function App() {
                 </a>
               ))}
             </div>
-            <a className="comp-card-link" href={contact.compCard.url} download>
+            <a
+              className="comp-card-link"
+              href={contact.compCard.url}
+              download={"PhuongPhuong-CompCard-" + new Date().getFullYear() + ".pdf"}
+            >
               {contact.compCard.label} <Arrow />
             </a>
           </div>

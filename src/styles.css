@@ -401,6 +401,11 @@ button:hover .arrow {
 .line-reveal__mask {
   display: block;
   overflow: hidden;
+  /* Room for italic descenders (p, g, y) and Vietnamese diacritics so the mask
+     never clips glyphs — "presence." was rendering as "bresence." without this.
+     Negative margins cancel the extra space so layout stays identical. */
+  padding: 0.14em 0.08em 0.24em;
+  margin: -0.14em -0.08em -0.24em;
 }
 
 .line-reveal__content {
@@ -428,7 +433,7 @@ html.motion-ready [data-reveal="marquee"][data-reveal-state="shown"] {
 
 html.motion-ready [data-reveal="lines"][data-reveal-state="pending"] .line-reveal__content {
   opacity: 0;
-  transform: translate3d(0, 110%, 0);
+  transform: translate3d(0, 135%, 0);
 }
 
 html.motion-ready [data-reveal="lines"][data-reveal-state="shown"] .line-reveal__content {
@@ -537,6 +542,27 @@ em {
   display: block;
   overflow: hidden;
   background: var(--mist);
+}
+
+/* Blur-up placeholders: the tiny LQIP renders behind the real image, so the
+   grid never shows flat grey boxes while lazy images stream in. */
+.lqip-shell {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.lqip-shell img {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.lqip-shell img.is-loaded,
+html:not(.motion-ready) .lqip-shell img,
+html.no-js .lqip-shell img {
+  opacity: 1;
 }
 
 html.motion-ready .work-card-slot[data-reveal-state="pending"] .work-card__motion {
@@ -697,6 +723,16 @@ html.motion-ready .work-card-slot[data-reveal-state="shown"] .work-card__image p
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--ink);
   transition: color 0.28s ease, background-color 0.28s ease, padding 0.28s ease;
+}
+
+/* The "view all" control is a button now (opens the gallery lightbox). */
+button.outline-link {
+  border-left: 0;
+  border-right: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 
 .outline-link:hover {
@@ -1102,10 +1138,12 @@ html.motion-ready .motion-image-block[data-reveal-state="shown"] picture {
 @media (prefers-reduced-motion: no-preference) {
   .press-marquee__track {
     animation: pressMarquee 15s linear infinite;
+    will-change: transform;
   }
 
   .press-marquee__lane:hover .press-marquee__track,
-  .press-marquee__lane:focus-within .press-marquee__track {
+  .press-marquee__lane:focus-within .press-marquee__track,
+  .press-marquee.is-idle .press-marquee__track {
     animation-play-state: paused;
   }
 }
@@ -1483,7 +1521,7 @@ html.motion-ready .motion-image-block[data-reveal-state="shown"] picture {
 @keyframes lineRise {
   from {
     opacity: 0;
-    transform: translate3d(0, 110%, 0);
+    transform: translate3d(0, 135%, 0);
   }
   to {
     opacity: 1;
