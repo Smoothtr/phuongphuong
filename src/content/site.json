@@ -1,0 +1,288 @@
+{
+  "site": {
+    "name": "Phương Phương",
+    "initials": "PP",
+    "role": "Model · Actress",
+    "location": "Based in Vietnam",
+    "email": "phuongvule2003@gmail.com",
+    "navigation": {
+      "work": "Work",
+      "editorial": "Editorial",
+      "about": "About",
+      "contact": "Book"
+    },
+    "socialLinks": [
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/hii.phuog?igsh=MTBxbHlhbjY4M2R1cQ=="
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com/share/19TSLYqqRh/?mibextid=wwXIfr"
+      }
+    ],
+    "seo": {
+      "title": "Phương Phương — Model & Actress",
+      "description": "Fashion, editorial, beauty, and commercial portfolio.",
+      "shareImage": "/images/hero-main.jpg",
+      "canonicalUrl": "https://phuongphuong.vercel.app/"
+    },
+    "footer": {
+      "copyrightName": "Phương Phương",
+      "backToTopLabel": "Back to top ↑"
+    }
+  },
+  "hero": {
+    "nameLines": [
+      "PHƯƠNG",
+      "PHƯƠNG"
+    ],
+    "image": "/images/hero-main.jpg",
+    "imageAlt": "Phương Phương in a floral editorial portrait",
+    "imageCaption": "01 / Visual portfolio",
+    "intro": "A considered presence for fashion, beauty and commercial stories.",
+    "ctaLabel": "Explore selected work",
+    "ctaTarget": "#work",
+    "yearLabel": "2025—26"
+  },
+  "statement": {
+    "eyebrow": "01 — Selected work",
+    "prefix": "Elegance in the pause. A visual practice shaped by ",
+    "emphasis": "texture, movement",
+    "suffix": " and quiet confidence."
+  },
+  "selectedWork": {
+    "eyebrow": "Selected work",
+    "headingLines": [
+      {
+        "text": "Studies in",
+        "italic": false
+      },
+      {
+        "text": "presence.",
+        "italic": true
+      }
+    ],
+    "helperText": "Click an image to view the full frame.",
+    "ctaLabel": "View all selected work",
+    "ctaTarget": "#editorial",
+    "items": [
+      {
+        "id": "01",
+        "title": "Soft Focus",
+        "category": "Beauty editorial",
+        "image": "/images/editorial-high-01.jpg",
+        "alt": "Phương Phương in a blue patterned beauty look"
+      },
+      {
+        "id": "02",
+        "title": "Sunday Form",
+        "category": "Fashion campaign",
+        "image": "/images/editorial-high-02.jpg",
+        "alt": "Phương Phương wearing a gold gown in a studio setting"
+      },
+      {
+        "id": "03",
+        "title": "Still Moving",
+        "category": "Commercial",
+        "image": "/images/editorial-high-03.jpg",
+        "alt": "Phương Phương in a warm-toned fashion portrait"
+      },
+      {
+        "id": "04",
+        "title": "Quiet Gesture",
+        "category": "Fashion editorial",
+        "image": "/images/editorial-high-05.jpg",
+        "alt": "Phương Phương in a studio fashion editorial"
+      },
+      {
+        "id": "05",
+        "title": "A Soft Line",
+        "category": "Editorial",
+        "image": "/images/editorial-high-06.jpg",
+        "alt": "Phương Phương in a contemporary editorial portrait"
+      },
+      {
+        "id": "06",
+        "title": "Blue Hour",
+        "category": "Beauty",
+        "image": "/images/editorial-high-07.jpg",
+        "alt": "Phương Phương in a polished beauty campaign"
+      },
+      {
+        "id": "07",
+        "title": "Afterglow",
+        "category": "Commercial",
+        "image": "/images/editorial-high-08.jpg",
+        "alt": "Phương Phương in a commercial fashion image"
+      },
+      {
+        "id": "08",
+        "title": "On Set",
+        "category": "Fashion",
+        "image": "/images/fullbody-01.jpg",
+        "alt": "Phương Phương in a full-length fashion look"
+      }
+    ]
+  },
+  "editorial": {
+    "eyebrow": "02 — Editorial series",
+    "headingLines": [
+      {
+        "text": "Visual narratives",
+        "italic": false
+      },
+      {
+        "text": "in three acts.",
+        "italic": true
+      }
+    ],
+    "items": [
+      {
+        "number": "01",
+        "title": "The Language of Flowers",
+        "subtitle": "Beauty / Spring",
+        "image": "/images/fullbody-02.jpg",
+        "alt": "Phương Phương in a full-length editorial portrait"
+      },
+      {
+        "number": "02",
+        "title": "Tactile Silence",
+        "subtitle": "Fashion / Studio",
+        "image": "/images/fullbody-03.jpg",
+        "alt": "Phương Phương in a studio fashion portrait"
+      },
+      {
+        "number": "03",
+        "title": "Dawn Study",
+        "subtitle": "Commercial / Motion",
+        "image": "/images/editorial-high-04.jpg",
+        "alt": "Phương Phương in a wide-format fashion editorial"
+      }
+    ]
+  },
+  "reel": {
+    "overlayTitle": "Motion studies",
+    "overlayDuration": "Image sequence / 00:18",
+    "eyebrow": "03 — Showreel",
+    "caption": "A visual sequence for fashion, beauty and movement.",
+    "intervalMs": 3600,
+    "frames": [
+      {
+        "image": "/images/beauty-wide.jpg",
+        "alt": "Phương Phương in a beauty portrait"
+      },
+      {
+        "image": "/images/look-01.jpg",
+        "alt": "Phương Phương in a tailored fashion look"
+      },
+      {
+        "image": "/images/look-02.jpg",
+        "alt": "Phương Phương in a pale blue fashion look"
+      },
+      {
+        "image": "/images/look-03.jpg",
+        "alt": "Phương Phương in a minimalist studio portrait"
+      },
+      {
+        "image": "/images/campaign-03.jpg",
+        "alt": "Phương Phương in a commercial campaign portrait"
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "04 — About",
+    "pressLabel": "Featured in",
+    "headingLines": [
+      {
+        "text": "Natural poise,",
+        "italic": false
+      },
+      {
+        "text": "held with intent.",
+        "italic": true
+      }
+    ],
+    "image": "/images/portrait-blush.jpg",
+    "imageAlt": "Phương Phương in a fashion editorial",
+    "biography": "Phương Phương is a Vietnam-based model and actress with a feeling for image, character, and the details between them. Her work moves from beauty and fashion editorials to commercial storytelling and camera-led performance.",
+    "ctaLabel": "Book an enquiry",
+    "measurements": [
+      {
+        "label": "Height",
+        "value": "166 cm"
+      },
+      {
+        "label": "Leg",
+        "value": "94 cm"
+      },
+      {
+        "label": "Bust · Waist · Hips",
+        "value": "79 · 58 · 85"
+      },
+      {
+        "label": "Dress",
+        "value": "XS / S"
+      },
+      {
+        "label": "Shoes",
+        "value": "EU 38"
+      },
+      {
+        "label": "Hair · Eyes",
+        "value": "Black · Dark brown"
+      }
+    ],
+    "press": [
+      {
+        "label": "Báo Tiền Phong",
+        "url": "https://baomoi.com/tu-sinh-vien-kinh-te-den-nguoi-mau-anh-mang-khat-vong-quang-ba-van-hoa-viet-c52201435.epi"
+      },
+      {
+        "label": "VTV3",
+        "url": "https://vtv.vn/video/dep-24-7-lua-mem-cham-tam-714920.htm"
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "05 — Contact",
+    "headingLines": [
+      {
+        "text": "Let’s make",
+        "italic": false
+      },
+      {
+        "text": "something felt.",
+        "italic": true
+      }
+    ],
+    "compCard": {
+      "url": "/comp-card-phuong-phuong.pdf",
+      "label": "Download comp card (PDF)"
+    },
+    "form": {
+      "nameLabel": "Your name",
+      "namePlaceholder": "Name",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@studio.com",
+      "projectLabel": "Project type",
+      "projectPlaceholder": "Select one",
+      "projectOptions": [
+        "Fashion / Editorial",
+        "Beauty / E-commerce",
+        "Commercial / TVC",
+        "Acting / Appearance",
+        "Other"
+      ],
+      "messageLabel": "Tell me about the project",
+      "messagePlaceholder": "Date, location, creative direction…",
+      "helperText": "Secure form delivery is enabled when the booking endpoint is connected.",
+      "submitLabel": "Send enquiry",
+      "submittingLabel": "Sending…",
+      "sendingMessage": "Sending your enquiry…",
+      "mailClientMessage": "Your enquiry is ready in your email app.",
+      "successMessage": "Thank you — your enquiry has been sent.",
+      "errorMessage": "We could not send this form. Please use the email link instead."
+    }
+  }
+}

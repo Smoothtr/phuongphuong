@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   aboutImage,
+  content,
   editorials,
   heroImage,
   measurements,
@@ -20,15 +21,15 @@ import {
 } from "./hooks/motion";
 
 const navItems = [
-  ["Work", "#work", "work"],
-  ["Editorial", "#editorial", "editorial"],
-  ["About", "#about", "about"],
-  ["Book", "#contact", "contact"]
+  [content.site.navigation.work || "Work", "#work", "work"],
+  [content.site.navigation.editorial || "Editorial", "#editorial", "editorial"],
+  [content.site.navigation.about || "About", "#about", "about"],
+  [content.site.navigation.contact || "Book", "#contact", "contact"]
 ];
 const sectionIds = navItems.map(([, , id]) => id);
 const galleryParallax = [-18, 14, -12, 18, -16, 12, -14, 16];
 
-function Header({ menuOpen, setMenuOpen, reduced }) {
+function Header({ menuOpen, setMenuOpen, reduced, initials }) {
   const menuButton = useRef(null);
   const { activeSection, hidden } = useNavigationMotion(sectionIds, reduced);
 
@@ -62,7 +63,7 @@ function Header({ menuOpen, setMenuOpen, reduced }) {
   return (
     <header className={headerClass}>
       <a className="wordmark" href="#top" onClick={closeMenu} aria-label="Go to top">
-        PP<span>®</span>
+        {initials}<span>®</span>
       </a>
       <nav
         className={menuOpen ? "primary-nav is-open" : "primary-nav"}
@@ -104,6 +105,12 @@ function Arrow({ direction = "right" }) {
 }
 
 function LinesReveal({ lines, className = "" }) {
+  const renderLine = (line) => {
+    if (React.isValidElement(line)) return line;
+    if (typeof line === "object" && line?.italic) return <em>{line.text}</em>;
+    return typeof line === "object" ? line.text : line;
+  };
+
   return (
     <h2 className={"line-reveal " + className} data-reveal="lines">
       {lines.map((line, index) => (
@@ -112,7 +119,7 @@ function LinesReveal({ lines, className = "" }) {
             className="line-reveal__content"
             style={{ "--line-delay": index * 110 + "ms" }}
           >
-            {line}
+            {renderLine(line)}
           </span>
         </span>
       ))}
@@ -120,11 +127,9 @@ function LinesReveal({ lines, className = "" }) {
   );
 }
 
-function HeroTitle() {
-  const words = ["PHƯƠNG", "PHƯƠNG"];
-
+function HeroTitle({ words, name }) {
   return (
-    <h1 className="hero__heading" aria-label="Phương Phương" data-reveal="hero">
+    <h1 className="hero__heading" aria-label={name} data-reveal="hero">
       {words.map((word, wordIndex) => (
         <span
           className={
@@ -132,7 +137,7 @@ function HeroTitle() {
               ? "hero__word hero__heading--offset"
               : "hero__word hero__word--primary"
           }
-          key={word}
+          key={word + wordIndex}
         >
           {[...word].map((character, characterIndex) => (
             <span
@@ -157,16 +162,19 @@ function ResponsiveImage({
   priority = false,
   className = ""
 }) {
+  const hasWebp = Boolean(asset.webpSrcSet);
+  const hasJpegSrcSet = Boolean(asset.jpegSrcSet);
+
   return (
     <picture>
-      <source type="image/webp" srcSet={asset.webpSrcSet} sizes={sizes} />
+      {hasWebp && <source type="image/webp" srcSet={asset.webpSrcSet} sizes={sizes} />}
       <img
         className={className}
         src={asset.src}
-        srcSet={asset.jpegSrcSet}
+        srcSet={hasJpegSrcSet ? asset.jpegSrcSet : undefined}
         sizes={sizes}
-        width={asset.width}
-        height={asset.height}
+        width={asset.width || undefined}
+        height={asset.height || undefined}
         alt={alt}
         loading={priority ? "eager" : loading}
         decoding="async"
@@ -269,14 +277,14 @@ function AnimatedMeasurementValue({ value, reduced }) {
   return <dd ref={valueRef}>{content}</dd>;
 }
 
-function PressMarquee({ items }) {
+function PressMarquee({ label, items }) {
   return (
     <div className="press-marquee" data-reveal="marquee">
-      <p>Featured in</p>
+      <p>{label}</p>
       <div className="press-marquee__lane">
         <div className="press-marquee__track">
           {items.map((item) => (
-            <a href={item.href} target="_blank" rel="noreferrer" key={item.label}>
+            <a href={item.url} target="_blank" rel="noreferrer" key={item.label}>
               {item.label} <Arrow />
             </a>
           ))}
@@ -393,6 +401,8 @@ function App() {
   const [pageVisible, setPageVisible] = useState(
     () => typeof document === "undefined" || !document.hidden
   );
+  const { site, hero, statement, selectedWork, editorial, reel, about, contact } = content;
+  const reelInterval = Math.min(Math.max(Number(reel.intervalMs) || 3600, 1200), 12000);
   const lightboxTrigger = useRef(null);
   const heroRef = useRef(null);
   const galleryRef = useRef(null);
@@ -404,6 +414,38 @@ function App() {
   useGalleryParallax(galleryRef, reduced);
 
   useEffect(() => {
+    const toAbsoluteUrl = (value) => {
+      try {
+        return new URL(value, site.seo.canonicalUrl || window.location.origin).toString();
+      } catch {
+        return value;
+      }
+    };
+    const updateMeta = (selector, value) => {
+      if (!value) return;
+      const element = document.head.querySelector(selector);
+      if (element) element.setAttribute("content", value);
+    };
+
+    document.title = site.seo.title || site.name;
+    updateMeta('meta[name="description"]', site.seo.description);
+    updateMeta('meta[property="og:title"]', site.seo.title);
+    updateMeta('meta[property="og:description"]', site.seo.description);
+    updateMeta('meta[property="og:image"]', toAbsoluteUrl(site.seo.shareImage));
+    updateMeta('meta[property="og:url"]', site.seo.canonicalUrl);
+
+    if (site.seo.canonicalUrl) {
+      let canonical = document.head.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", site.seo.canonicalUrl);
+    }
+  }, [site]);
+
+  useEffect(() => {
     const syncPageVisibility = () => setPageVisible(!document.hidden);
     document.addEventListener("visibilitychange", syncPageVisibility);
     return () => {
@@ -412,14 +454,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !reelActive || !pageVisible || lightbox) return undefined;
+    if (reduced || !reelActive || !pageVisible || lightbox || reelFrames.length < 2) {
+      return undefined;
+    }
 
     const timer = window.setInterval(() => {
       setReelIndex((current) => (current + 1) % reelFrames.length);
-    }, 3600);
+    }, reelInterval);
 
     return () => window.clearInterval(timer);
-  }, [lightbox, pageVisible, reduced, reelActive]);
+  }, [lightbox, pageVisible, reduced, reelActive, reelFrames.length, reelInterval]);
 
   const openLightbox = (items, index, event) => {
     lightboxTrigger.current = event.currentTarget;
@@ -451,12 +495,12 @@ function App() {
     if (!endpoint) {
       window.location.href = "mailto:" + profile.email + "?subject=" + subject + "&body=" + body;
       setBookingState("success");
-      setBookingStatus("Your enquiry is ready in your email app.");
+      setBookingStatus(contact.form.mailClientMessage);
       return;
     }
 
     setBookingState("submitting");
-    setBookingStatus("Sending your enquiry…");
+    setBookingStatus(contact.form.sendingMessage);
 
     try {
       const response = await fetch(endpoint, {
@@ -472,62 +516,67 @@ function App() {
 
       formElement.reset();
       setBookingState("success");
-      setBookingStatus("Thank you — your enquiry has been sent.");
+      setBookingStatus(contact.form.successMessage);
     } catch {
       setBookingState("error");
-      setBookingStatus("We could not send this form. Please use the email link instead.");
+      setBookingStatus(contact.form.errorMessage);
     }
   };
 
   return (
     <div className={menuOpen ? "app menu-is-open" : "app"}>
-      <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} reduced={reduced} />
+      <Header
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        reduced={reduced}
+        initials={site.initials}
+      />
 
       <main>
         <section className="hero" id="top" ref={heroRef}>
           <div className="hero__meta">
-            <p>Based in Vietnam</p>
-            <p>Model · Actress</p>
+            <p>{site.location}</p>
+            <p>{site.role}</p>
           </div>
           <div className="hero__content">
-            <HeroTitle />
+            <HeroTitle words={hero.nameLines} name={site.name} />
             <div className="hero__image-wrap">
               <div className="hero__image">
                 <ResponsiveImage
                   asset={heroImage}
-                  alt="Phương Phương in a floral editorial portrait"
+                  alt={hero.imageAlt}
                   sizes="(max-width: 760px) 61vw, 31vw"
                   priority
                 />
               </div>
-              <p className="hero__image-caption">01 / Visual portfolio</p>
+              <p className="hero__image-caption">{hero.imageCaption}</p>
             </div>
             <p className="hero__intro">
-              A considered presence for fashion, beauty<br className="desktop-only" /> and commercial stories.
+              {hero.intro}
             </p>
           </div>
           <div className="hero__footer">
-            <MagneticLink href="#work" className="text-link" reduced={reduced}>
-              Explore selected work <Arrow />
+            <MagneticLink href={hero.ctaTarget} className="text-link" reduced={reduced}>
+              {hero.ctaLabel} <Arrow />
             </MagneticLink>
-            <p>2025—26</p>
+            <p>{hero.yearLabel}</p>
           </div>
         </section>
 
         <section className="statement section-shell">
-          <p className="eyebrow" data-reveal="eyebrow">01 — Selected work</p>
+          <p className="eyebrow" data-reveal="eyebrow">{statement.eyebrow}</p>
           <div className="statement__copy" data-reveal="copy">
-            <p>Elegance in the pause. A visual practice shaped by <em>texture, movement</em> and quiet confidence.</p>
+            <p>{statement.prefix}<em>{statement.emphasis}</em>{statement.suffix}</p>
           </div>
         </section>
 
         <section className="works section-shell" id="work">
           <div className="section-heading">
             <div>
-              <p className="eyebrow" data-reveal="eyebrow">Selected work</p>
-              <LinesReveal lines={[<>Studies in</>, <em>presence.</em>]} />
+              <p className="eyebrow" data-reveal="eyebrow">{selectedWork.eyebrow}</p>
+              <LinesReveal lines={selectedWork.headingLines} />
             </div>
-            <p className="section-heading__aside" data-reveal="eyebrow">Click an image to view the full frame.</p>
+            <p className="section-heading__aside" data-reveal="eyebrow">{selectedWork.helperText}</p>
           </div>
           <div className="work-grid" ref={galleryRef}>
             {works.map((work, index) => (
@@ -539,13 +588,13 @@ function App() {
               />
             ))}
           </div>
-          <a className="outline-link" href="#editorial">View all selected work <Arrow /></a>
+          <a className="outline-link" href={selectedWork.ctaTarget}>{selectedWork.ctaLabel} <Arrow /></a>
         </section>
 
         <section className="editorial" id="editorial">
           <div className="section-shell editorial__heading">
-            <p className="eyebrow" data-reveal="eyebrow">02 — Editorial series</p>
-            <LinesReveal lines={[<>Visual narratives</>, <>in <em>three acts.</em></>]} />
+            <p className="eyebrow" data-reveal="eyebrow">{editorial.eyebrow}</p>
+            <LinesReveal lines={editorial.headingLines} />
           </div>
           <div className="editorial__track" aria-label="Editorial series">
             {editorials.map((editorial, index) => (
@@ -587,8 +636,8 @@ function App() {
               className="reel__image"
             />
             <div className="reel__overlay">
-              <p>Motion studies</p>
-              <span>Image sequence / 00:18</span>
+              <p>{reel.overlayTitle}</p>
+              <span>{reel.overlayDuration}</span>
             </div>
             <div className="reel__dots" aria-label="Choose reel frame">
               {reelFrames.map((frame, index) => (
@@ -604,8 +653,8 @@ function App() {
             </div>
           </div>
           <div className="reel__caption" data-reveal="copy">
-            <p className="eyebrow">03 — Showreel</p>
-            <p>A visual sequence for fashion, beauty and movement.</p>
+            <p className="eyebrow">{reel.eyebrow}</p>
+            <p>{reel.caption}</p>
           </div>
         </section>
 
@@ -613,22 +662,18 @@ function App() {
           <div className="about__image motion-image-block" data-reveal="image">
             <ResponsiveImage
               asset={aboutImage}
-              alt="Phương Phương in a fashion editorial"
+              alt={about.imageAlt}
               sizes="(max-width: 760px) 100vw, 50vw"
             />
           </div>
           <div className="about__content section-shell">
-            <p className="eyebrow" data-reveal="eyebrow">04 — About</p>
-            <LinesReveal lines={[<>Natural poise,</>, <em>held with intent.</em>]} />
+            <p className="eyebrow" data-reveal="eyebrow">{about.eyebrow}</p>
+            <LinesReveal lines={about.headingLines} />
             <div className="about__columns" data-reveal="copy">
               <div>
-                <p>
-                  Phương Phương is a Vietnam-based model and actress with a feeling for image,
-                  character, and the details between them. Her work moves from beauty and fashion
-                  editorials to commercial storytelling and camera-led performance.
-                </p>
+                <p>{about.biography}</p>
                 <MagneticLink className="text-link" href={"mailto:" + profile.email} reduced={reduced}>
-                  Book an enquiry <Arrow />
+                  {about.ctaLabel} <Arrow />
                 </MagneticLink>
               </div>
               <dl className="measurements">
@@ -640,51 +685,52 @@ function App() {
                 ))}
               </dl>
             </div>
-            <PressMarquee items={profile.press} />
+            <PressMarquee label={about.pressLabel} items={about.press} />
           </div>
         </section>
 
         <section className="contact section-shell" id="contact">
           <div className="contact__intro">
-            <p className="eyebrow" data-reveal="eyebrow">05 — Contact</p>
-            <LinesReveal lines={[<>Let’s make</>, <>something <em>felt.</em></>]} />
+            <p className="eyebrow" data-reveal="eyebrow">{contact.eyebrow}</p>
+            <LinesReveal lines={contact.headingLines} />
             <div className="contact__direct">
               <a href={"mailto:" + profile.email}>{profile.email}</a>
-              <a href={profile.instagram} target="_blank" rel="noreferrer">Instagram <Arrow /></a>
-              <a href={profile.facebook} target="_blank" rel="noreferrer">Facebook <Arrow /></a>
+              {profile.socialLinks.map((link) => (
+                <a href={link.url} target="_blank" rel="noreferrer" key={link.label}>
+                  {link.label} <Arrow />
+                </a>
+              ))}
             </div>
-            <a className="comp-card-link" href="/comp-card-phuong-phuong.pdf" download>
-              Download comp card (PDF) <Arrow />
+            <a className="comp-card-link" href={contact.compCard.url} download>
+              {contact.compCard.label} <Arrow />
             </a>
           </div>
           <form className="booking-form" onSubmit={submitBooking} data-reveal="copy">
             <label>
-              <span>Your name</span>
-              <input type="text" name="name" autoComplete="name" placeholder="Name" required />
+              <span>{contact.form.nameLabel}</span>
+              <input type="text" name="name" autoComplete="name" placeholder={contact.form.namePlaceholder} required />
             </label>
             <label>
-              <span>Email address</span>
-              <input type="email" name="email" autoComplete="email" placeholder="you@studio.com" required />
+              <span>{contact.form.emailLabel}</span>
+              <input type="email" name="email" autoComplete="email" placeholder={contact.form.emailPlaceholder} required />
             </label>
             <label>
-              <span>Project type</span>
+              <span>{contact.form.projectLabel}</span>
               <select name="project" defaultValue="" required>
-                <option value="" disabled>Select one</option>
-                <option>Fashion / Editorial</option>
-                <option>Beauty / E-commerce</option>
-                <option>Commercial / TVC</option>
-                <option>Acting / Appearance</option>
-                <option>Other</option>
+                <option value="" disabled>{contact.form.projectPlaceholder}</option>
+                {contact.form.projectOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </label>
             <label>
-              <span>Tell me about the project</span>
-              <textarea name="message" rows="4" placeholder="Date, location, creative direction…" required />
+              <span>{contact.form.messageLabel}</span>
+              <textarea name="message" rows="4" placeholder={contact.form.messagePlaceholder} required />
             </label>
             <div className="booking-form__footer">
-              <p>Secure form delivery is enabled when the booking endpoint is connected.</p>
+              <p>{contact.form.helperText}</p>
               <MagneticButton className="submit-button" type="submit" disabled={bookingState === "submitting"} reduced={reduced}>
-                {bookingState === "submitting" ? "Sending…" : "Send enquiry"} <Arrow />
+                {bookingState === "submitting" ? contact.form.submittingLabel : contact.form.submitLabel} <Arrow />
               </MagneticButton>
             </div>
             <p className="booking-status" aria-live="polite">{bookingStatus}</p>
@@ -693,9 +739,9 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <a className="wordmark" href="#top" aria-label="Go to top">PP<span>®</span></a>
-        <p>© {new Date().getFullYear()} Phương Phương</p>
-        <a href="#top">Back to top ↑</a>
+        <a className="wordmark" href="#top" aria-label="Go to top">{site.initials}<span>®</span></a>
+        <p>© {new Date().getFullYear()} {site.footer.copyrightName}</p>
+        <a href="#top">{site.footer.backToTopLabel}</a>
       </footer>
 
       <Lightbox lightbox={lightbox} onClose={closeLightbox} setLightbox={setLightbox} />

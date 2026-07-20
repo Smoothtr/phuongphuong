@@ -1,0 +1,422 @@
+backend:
+  name: github
+  repo: Smoothtr/phuongphuong
+  branch: main
+  base_url: https://phuongphuong.vercel.app
+  auth_endpoint: api/auth
+  site_domain: phuongphuong.vercel.app
+  auth_scope: public_repo
+  commit_messages:
+    create: "cms: create {{collection}}"
+    update: "cms: update {{collection}}"
+    delete: "cms: delete {{collection}}"
+    uploadMedia: "cms: upload {{path}}"
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+media_library:
+  config:
+    max_file_size: 5242880
+site_url: https://phuongphuong.vercel.app
+display_url: https://phuongphuong.vercel.app
+editor:
+  preview: false
+
+collections:
+  - name: site
+    label: Nội dung website
+    files:
+      - name: portfolio
+        label: Portfolio Phương Phương
+        file: src/content/site.json
+        format: json
+        fields:
+          - label: Thông tin chung
+            name: site
+            widget: object
+            fields:
+              - { label: Tên hiển thị, name: name, widget: string }
+              - {
+                  label: Chữ viết tắt logo,
+                  name: initials,
+                  widget: string,
+                  hint: "Ví dụ: PP",
+                  pattern: ["^.{1,3}$", "Tối đa 3 ký tự để không vỡ logo."],
+                }
+              - { label: Vai trò, name: role, widget: string }
+              - {
+                  label: Địa điểm hiển thị,
+                  name: location,
+                  widget: string,
+                  hint: "Ví dụ: Based in Vietnam",
+                }
+              - {
+                  label: Email booking,
+                  name: email,
+                  widget: string,
+                  pattern: ["^.+@.+\\..+$", "Nhập email hợp lệ"],
+                }
+              - label: Nhãn menu
+                name: navigation
+                widget: object
+                fields:
+                  - { label: Work, name: work, widget: string }
+                  - { label: Editorial, name: editorial, widget: string }
+                  - { label: About, name: about, widget: string }
+                  - { label: Nút booking, name: contact, widget: string }
+              - label: Mạng xã hội
+                name: socialLinks
+                widget: list
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Tên kênh, name: label, widget: string }
+                  - {
+                      label: Đường dẫn,
+                      name: url,
+                      widget: string,
+                      pattern:
+                        [
+                          "^https?://.+",
+                          "Dùng đường dẫn bắt đầu bằng https://",
+                        ],
+                    }
+              - label: SEO và chia sẻ mạng xã hội
+                name: seo
+                widget: object
+                fields:
+                  - { label: Tiêu đề trang, name: title, widget: string }
+                  - { label: Mô tả, name: description, widget: text }
+                  - {
+                      label: Ảnh chia sẻ,
+                      name: shareImage,
+                      widget: image,
+                      hint: "Khuyến nghị ảnh ngang, tối thiểu 1200 × 630 px.",
+                    }
+                  - {
+                      label: URL chính thức,
+                      name: canonicalUrl,
+                      widget: string,
+                      pattern:
+                        [
+                          "^https?://.+",
+                          "Dùng URL đầy đủ bắt đầu bằng https://",
+                        ],
+                    }
+              - label: Footer
+                name: footer
+                widget: object
+                fields:
+                  - {
+                      label: Tên bản quyền,
+                      name: copyrightName,
+                      widget: string,
+                    }
+                  - {
+                      label: Nhãn về đầu trang,
+                      name: backToTopLabel,
+                      widget: string,
+                    }
+
+          - label: Hero đầu trang
+            name: hero
+            widget: object
+            fields:
+              - label: Tên hiển thị
+                name: nameLines
+                widget: list
+                min: 1
+                max: 2
+                field:
+                  label: Dòng tên
+                  name: line
+                  widget: string
+                  pattern:
+                    ["^.{1,10}$", "Tối đa 10 ký tự mỗi dòng để giữ bố cục."]
+              - {
+                  label: Ảnh hero,
+                  name: image,
+                  widget: image,
+                  hint: "Ảnh dọc khuyến nghị từ 1600 px chiều cao.",
+                }
+              - { label: Mô tả ảnh (alt), name: imageAlt, widget: string }
+              - { label: Chú thích ảnh, name: imageCaption, widget: string }
+              - { label: Giới thiệu ngắn, name: intro, widget: text }
+              - { label: Nhãn CTA, name: ctaLabel, widget: string }
+              - {
+                  label: Đích CTA,
+                  name: ctaTarget,
+                  widget: hidden,
+                  default: "#work",
+                }
+              - { label: Nhãn năm, name: yearLabel, widget: string }
+
+          - label: Mở đầu Selected work
+            name: statement
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - { label: Đoạn trước chữ nghiêng, name: prefix, widget: string }
+              - { label: Chữ nghiêng, name: emphasis, widget: string }
+              - { label: Đoạn sau chữ nghiêng, name: suffix, widget: string }
+
+          - label: Selected work
+            name: selectedWork
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - label: Tiêu đề
+                name: headingLines
+                widget: list
+                min: 1
+                max: 2
+                fields:
+                  - { label: Nội dung dòng, name: text, widget: string }
+                  - {
+                      label: In nghiêng,
+                      name: italic,
+                      widget: boolean,
+                      default: false,
+                    }
+              - {
+                  label: Hướng dẫn cạnh tiêu đề,
+                  name: helperText,
+                  widget: string,
+                }
+              - { label: Nhãn CTA, name: ctaLabel, widget: string }
+              - {
+                  label: Đích CTA,
+                  name: ctaTarget,
+                  widget: hidden,
+                  default: "#editorial",
+                }
+              - label: Danh sách ảnh work
+                name: items
+                widget: list
+                min: 1
+                max: 8
+                summary: "{{fields.title}} — {{fields.category}}"
+                hint: "Kéo thả để đổi thứ tự. Tối đa 8 ảnh để giữ đúng layout."
+                fields:
+                  - {
+                      label: Số thứ tự,
+                      name: id,
+                      widget: string,
+                      required: false,
+                      hint: "Ví dụ: 01. Nếu để trống hệ thống tự đánh số.",
+                    }
+                  - { label: Tên work, name: title, widget: string }
+                  - { label: Danh mục, name: category, widget: string }
+                  - { label: Ảnh, name: image, widget: image }
+                  - { label: Mô tả ảnh (alt), name: alt, widget: string }
+
+          - label: Editorial series
+            name: editorial
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - label: Tiêu đề
+                name: headingLines
+                widget: list
+                min: 1
+                max: 2
+                fields:
+                  - { label: Nội dung dòng, name: text, widget: string }
+                  - {
+                      label: In nghiêng,
+                      name: italic,
+                      widget: boolean,
+                      default: false,
+                    }
+              - label: Danh sách editorial
+                name: items
+                widget: list
+                min: 1
+                max: 6
+                summary: "{{fields.title}} — {{fields.subtitle}}"
+                fields:
+                  - {
+                      label: Số thứ tự,
+                      name: number,
+                      widget: string,
+                      required: false,
+                      hint: "Ví dụ: 01. Nếu để trống hệ thống tự đánh số.",
+                    }
+                  - { label: Tên editorial, name: title, widget: string }
+                  - { label: Danh mục phụ, name: subtitle, widget: string }
+                  - { label: Ảnh, name: image, widget: image }
+                  - { label: Mô tả ảnh (alt), name: alt, widget: string }
+
+          - label: Showreel ảnh
+            name: reel
+            widget: object
+            fields:
+              - { label: Tiêu đề overlay, name: overlayTitle, widget: string }
+              - {
+                  label: Thời lượng overlay,
+                  name: overlayDuration,
+                  widget: string,
+                }
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - { label: Chú thích, name: caption, widget: text }
+              - {
+                  label: Thời gian đổi ảnh (mili giây),
+                  name: intervalMs,
+                  widget: number,
+                  value_type: int,
+                  min: 1200,
+                  max: 12000,
+                }
+              - label: Khung hình
+                name: frames
+                widget: list
+                min: 1
+                max: 8
+                summary: "{{fields.alt}}"
+                fields:
+                  - { label: Ảnh, name: image, widget: image }
+                  - { label: Mô tả ảnh (alt), name: alt, widget: string }
+
+          - label: Giới thiệu
+            name: about
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - { label: Nhãn press, name: pressLabel, widget: string }
+              - label: Tiêu đề
+                name: headingLines
+                widget: list
+                min: 1
+                max: 2
+                fields:
+                  - { label: Nội dung dòng, name: text, widget: string }
+                  - {
+                      label: In nghiêng,
+                      name: italic,
+                      widget: boolean,
+                      default: false,
+                    }
+              - { label: Ảnh chân dung, name: image, widget: image }
+              - { label: Mô tả ảnh (alt), name: imageAlt, widget: string }
+              - { label: Tiểu sử, name: biography, widget: text }
+              - { label: Nhãn CTA booking, name: ctaLabel, widget: string }
+              - label: Số đo
+                name: measurements
+                widget: list
+                summary: "{{fields.label}}: {{fields.value}}"
+                fields:
+                  - { label: Tên chỉ số, name: label, widget: string }
+                  - { label: Giá trị, name: value, widget: string }
+              - label: Báo chí / truyền thông
+                name: press
+                widget: list
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Tên ấn phẩm, name: label, widget: string }
+                  - {
+                      label: Đường dẫn,
+                      name: url,
+                      widget: string,
+                      pattern:
+                        [
+                          "^https?://.+",
+                          "Dùng đường dẫn bắt đầu bằng https://",
+                        ],
+                    }
+
+          - label: Liên hệ
+            name: contact
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - label: Tiêu đề
+                name: headingLines
+                widget: list
+                min: 1
+                max: 2
+                fields:
+                  - { label: Nội dung dòng, name: text, widget: string }
+                  - {
+                      label: In nghiêng,
+                      name: italic,
+                      widget: boolean,
+                      default: false,
+                    }
+              - label: Comp card
+                name: compCard
+                widget: object
+                fields:
+                  - {
+                      label: File PDF,
+                      name: url,
+                      widget: file,
+                      hint: "Có thể upload PDF mới để thay thế.",
+                    }
+                  - { label: Nhãn tải xuống, name: label, widget: string }
+              - label: Nội dung form
+                name: form
+                widget: object
+                fields:
+                  - { label: Nhãn họ tên, name: nameLabel, widget: string }
+                  - {
+                      label: Gợi ý họ tên,
+                      name: namePlaceholder,
+                      widget: string,
+                    }
+                  - { label: Nhãn email, name: emailLabel, widget: string }
+                  - {
+                      label: Gợi ý email,
+                      name: emailPlaceholder,
+                      widget: string,
+                    }
+                  - {
+                      label: Nhãn loại dự án,
+                      name: projectLabel,
+                      widget: string,
+                    }
+                  - {
+                      label: Gợi ý chọn dự án,
+                      name: projectPlaceholder,
+                      widget: string,
+                    }
+                  - label: Các loại dự án
+                    name: projectOptions
+                    widget: list
+                    min: 1
+                    field: { label: Loại dự án, name: option, widget: string }
+                  - {
+                      label: Nhãn mô tả dự án,
+                      name: messageLabel,
+                      widget: string,
+                    }
+                  - {
+                      label: Gợi ý mô tả dự án,
+                      name: messagePlaceholder,
+                      widget: string,
+                    }
+                  - {
+                      label: Thông báo dưới form,
+                      name: helperText,
+                      widget: text,
+                    }
+                  - { label: Nhãn nút gửi, name: submitLabel, widget: string }
+                  - {
+                      label: Nhãn khi đang gửi,
+                      name: submittingLabel,
+                      widget: string,
+                    }
+                  - {
+                      label: Thông báo đang gửi,
+                      name: sendingMessage,
+                      widget: string,
+                    }
+                  - {
+                      label: Thông báo mở ứng dụng email,
+                      name: mailClientMessage,
+                      widget: string,
+                    }
+                  - {
+                      label: Thông báo gửi thành công,
+                      name: successMessage,
+                      widget: string,
+                    }
+                  - { label: Thông báo lỗi, name: errorMessage, widget: string }
